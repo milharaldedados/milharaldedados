@@ -1,0 +1,14 @@
+---
+title: Sobre
+author: ''
+date: '2021-04-15'
+slug: sobre
+categories: []
+tags: []
+---
+
+Nós somos um canal na Twitch de *Gameplay* de *R* e outras coisas relacionadas à ciências humanas.
+
+Estamos online todas as quintas às 18:30. Se essa promessa falhar, a culpa foi do Adriano.
+
+https://www.twitch.tv/milharaldedados
