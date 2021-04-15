@@ -1,0 +1,7 @@
+"0","```r
+table(e$TP_COR_RACA)
+```"
+"1","
+      ND   Branca    Preta    Parda  Amarela IndÃ­gena 
+   61248  1117903   412508  1481627    71475    19049 
+"

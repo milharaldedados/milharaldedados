@@ -1,0 +1,7 @@
+"0","```r
+library(ggplot2)
+library(plotly)
+g = ggplot(data = e, aes(Q006)) +
+  geom_histogram(stat = \"count\")
+ggplotly(g)
+```"

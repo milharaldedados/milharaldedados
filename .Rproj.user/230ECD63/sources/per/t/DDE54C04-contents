@@ -1,0 +1,207 @@
+---
+title: Como Vencer no ENEM?
+author: ''
+date: '2021-04-15'
+slug: como-vencer-no-enem
+categories:
+  - live
+tags:
+  - r
+  - análise
+  - quanti
+---
+
+# COMO VENCER NO ENEM?
+
+Vamos descobrir como vencer no ENEM. Quem você precisa ser para tirar boas notas no ENEM;
+
+*H1*: quanto mais dinheiro, melhor o desempenho;
+
+*H2:* brancos tem melhor desempenho;
+
+*H3*: negros tem mais acesso ao ensino superior;
+
+*H4*: estudantes de Paracambi são mais idiotas que estudantes de Itatiaia.
+
+*H5*: mulheres casadas tem notas menores
+
+*H6*: menos mulheres casadas que homens casados
+
+## Leitura dos dados
+
+```{r}
+setwd("D:/Backups/GitHub/milharal/como vencer no enem/microdados_enem_2019/DADOS")
+enem = read.csv2("MICRODADOS_ENEM_2019.csv")
+```
+
+```{r}
+# saveRDS(enem, "enem19.RDS")
+enem = readRDS("enem19BF.RDS")
+```
+
+## Variáveis selecionadas
+
++------------------------------------------------------------+
+| CO_MUNICIPIO_RESIDENCIA                                    |
++============================================================+
+| NO_MUNICIPIO_RESIDENCIA                                    |
++------------------------------------------------------------+
+| CO_UF_RESIDENCIA                                           |
++------------------------------------------------------------+
+| SG_UF_RESIDENCIA                                           |
++------------------------------------------------------------+
+| NU_IDADE                                                   |
++------------------------------------------------------------+
+| TP_SEXO                                                    |
++------------------------------------------------------------+
+| TP_ESTADO_CIVIL                                            |
++------------------------------------------------------------+
+| TP_COR_RACA                                                |
++------------------------------------------------------------+
+| TP_ST_CONCLUSAO                                            |
++------------------------------------------------------------+
+| CO_ESCOLA                                                  |
++------------------------------------------------------------+
+| TP_DEPENDENCIA_ADM_ESC                                     |
++------------------------------------------------------------+
+| TP_PRESENCA_CN                                             |
++------------------------------------------------------------+
+| TP_PRESENCA_CH                                             |
++------------------------------------------------------------+
+| TP_PRESENCA_LC                                             |
++------------------------------------------------------------+
+| TP_PRESENCA_MT                                             |
++------------------------------------------------------------+
+| NU_NOTA_CN                                                 |
++------------------------------------------------------------+
+| NU_NOTA_CH                                                 |
++------------------------------------------------------------+
+| NU_NOTA_LC                                                 |
++------------------------------------------------------------+
+| NU_NOTA_MT                                                 |
++------------------------------------------------------------+
+| TP_STATUS_REDACAO                                          |
++------------------------------------------------------------+
+| NU_NOTA_REDACAO                                            |
++------------------------------------------------------------+
+| Q006                                                       |
++------------------------------------------------------------+
+
+## Selecionando Variáveis
+
+```{r}
+e <- enem[, c("CO_MUNICIPIO_RESIDENCIA", "NO_MUNICIPIO_RESIDENCIA",
+              "CO_UF_RESIDENCIA", "SG_UF_RESIDENCIA",
+              "NU_IDADE", "TP_SEXO", "TP_ESTADO_CIVIL",
+              "TP_COR_RACA", "TP_ST_CONCLUSAO", "CO_ESCOLA", 
+              "TP_DEPENDENCIA_ADM_ESC", "TP_PRESENCA_CN", "TP_PRESENCA_CH", "TP_PRESENCA_LC", "TP_PRESENCA_MT",
+              "NU_NOTA_CN", "NU_NOTA_CH", "NU_NOTA_LC", "NU_NOTA_MT", "TP_STATUS_REDACAO",
+              "NU_NOTA_REDACAO", "Q006")]
+enem <- NULL
+```
+
+
+## Excluindo pessoas
+
+Vamos selecionar os dados que queremos trabalhar. Queremos apenas as pessoas que concluíram o Ensimo Médio, ou irão concluir em 2019, ano da prova. Pra isso, vamos selecionar na variável *TP_ST_CONCLUSAO* os valores 1 (já concluiu) ou 2 (irá concluir em 2019).
+
+```{r}
+e <- e[e$TP_ST_CONCLUSAO == 1 | e$TP_ST_CONCLUSAO == 2, ]
+```
+
+Também iremos analisar somente as pessoas que, efetivamente, participaram de todas as provas. Só pra facilitar. As seguintes variáveis descrevem a presença em cada prova, e "1" que estavam presentes.
+
+```{r}
+e <- e[e$TP_PRESENCA_CN == 1, ]
+e <- e[e$TP_PRESENCA_CH == 1, ]
+e <- e[e$TP_PRESENCA_LC == 1, ]
+e <- e[e$TP_PRESENCA_MT == 1, ]
+```
+
+Vamos salvar nosso banco limpo:
+
+```{r}
+#saveRDS(e, "enem19BF_v1.RDS")
+e <- readRDS("enem19BF_v1.RDS")
+```
+
+# Descrição do banco
+
+```{r}
+e$TP_COR_RACA = factor(e$TP_COR_RACA, levels = c(0:5), labels = c("ND", "Branca", "Preta", "Parda", "Amarela", "Indígena"))
+
+e$TP_ESTADO_CIVIL = factor(e$TP_ESTADO_CIVIL, levels = c(0:4), labels = c("NI", "Solteiro", "Casado", "Divorciado", "Viúvo"))
+
+e$NU_NOTA_CN = as.numeric(e$NU_NOTA_CN)
+e$NU_NOTA_CH = as.numeric(e$NU_NOTA_CH)
+e$NU_NOTA_LC = as.numeric(e$NU_NOTA_LC)
+e$NU_NOTA_MT = as.numeric(e$NU_NOTA_MT)
+
+
+
+#table(e$TP_ESTADO_CIVIL)
+# 0	Não informado
+# 1	Solteiro(a)
+# 2 Casado(a)/Mora com companheiro(a)
+# 3	Divorciado(a)/Desquitado(a)/Separado(a)
+# 4	Viúvo(a)
+
+
+```
+
+```{r}
+table(e$TP_COR_RACA)
+table(e$TP_SEXO)
+```
+
+:
+
+```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=TRUE}
+library(ggplot2)
+library(plotly)
+# Gráfico no gplot2 + plotly para dar mais informações conforme passamos o mouse;
+g = ggplot(data = e, aes(Q006)) +
+  geom_histogram(stat = "count")
+ggplotly(g)
+```
+
+## Mulheres Casadas
+
+Nossa hipótese é de que mulheres casadas tem notas menores que mulheres não casadas. Para testar isso, vamos fazer um teste-t para saber se a média é diferente entre os dois grupos.
+
+Antes de fazer o teste-t, vamos olhar a distribuição das variáveis.
+
+```{r}
+mulheres <- e[e$TP_SEXO == "F", ]
+```
+
+```{r}
+table(mulheres$TP_ESTADO_CIVIL)/nrow(mulheres) * 100
+mean(mulheres$NU_IDADE); sd(mulheres$NU_IDADE)
+```
+```{r}
+hist(mulheres$NU_IDADE, breaks = 100)
+nrow(mulheres[mulheres$NU_IDADE > 20, ])
+nrow(mulheres[mulheres$NU_IDADE <= 20, ])
+plot(mulheres$TP_ESTADO_CIVIL)
+```
+
+
+```{r}
+casadas <- mulheres[mulheres$TP_ESTADO_CIVIL == "Casado", ]
+solteiras <- mulheres[mulheres$TP_ESTADO_CIVIL == "Solteiro", ]
+ch <- t.test(casadas$NU_NOTA_CH, solteiras$NU_NOTA_CH); ch
+cn <- t.test(casadas$NU_NOTA_CN, solteiras$NU_NOTA_CN); cn
+mt <- t.test(casadas$NU_NOTA_MT, solteiras$NU_NOTA_MT); mt
+lc <- t.test(casadas$NU_NOTA_LC, solteiras$NU_NOTA_LC); lc
+re <- t.test(casadas$NU_NOTA_REDACAO, solteiras$NU_NOTA_REDACAO); re 
+```
+
+
+# Como vencer no ENEM?
+
+O primeiro para vencer no ENEM, caso você seja uma mulher, é ser solteira. Evite ser cada ao fazer o ENEM.
+
+# Limitações
+
+Analisar redação com base nos tipos de "erro".

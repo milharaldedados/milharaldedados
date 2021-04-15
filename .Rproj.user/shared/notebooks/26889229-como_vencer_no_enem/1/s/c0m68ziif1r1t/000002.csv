@@ -1,0 +1,4 @@
+"0","```r
+setwd(\"D:/Backups/GitHub/milharal/como vencer no enem/microdados_enem_2019/DADOS\")
+enem = read.csv2(\"MICRODADOS_ENEM_2019.csv\")
+```"

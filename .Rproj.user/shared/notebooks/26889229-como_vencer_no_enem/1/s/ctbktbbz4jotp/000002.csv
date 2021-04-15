@@ -1,0 +1,6 @@
+"0","```r
+e <- e[e$TP_PRESENCA_CN == 1, ]
+e <- e[e$TP_PRESENCA_CH == 1, ]
+e <- e[e$TP_PRESENCA_LC == 1, ]
+e <- e[e$TP_PRESENCA_MT == 1, ]
+```"

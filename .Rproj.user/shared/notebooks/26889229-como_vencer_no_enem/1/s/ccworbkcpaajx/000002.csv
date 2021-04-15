@@ -1,0 +1,5 @@
+"0","```r
+e <- enem[enem$TP_ST_CONCLUSAO == 1 | enem$TP_ST_CONCLUSAO == 2, ]
+```"
+"1","There were 49 warnings (use warnings() to see them)
+"
